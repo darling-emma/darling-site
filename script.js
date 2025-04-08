@@ -10,9 +10,9 @@ ScrollTrigger.defaults({
 
 <script>
 // Animate From
-$(".header u-container-horiz").each(function (index) {
+$(".textalign-center").each(function (index) {
   let triggerElement = $(this);
-  let targetElement = $(".wrap-50 align-left");
+  let targetElement = $(this);
 
   let tl = gsap.timeline({
     scrollTrigger: {
