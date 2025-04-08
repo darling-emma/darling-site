@@ -20,11 +20,11 @@ $(".textalign-center").each(function (index) {
       // trigger element - viewport
       start: "top center",
       end: "bottom top",
-      scrub: 1
+      scrub: true
     }
   });
   tl.from(targetElement, {
-    height: "100%",
+    opacity: 100,
     duration: 1
   });
 });
