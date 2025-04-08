@@ -7,3 +7,5 @@ gsap.to(".your-element", {
   x: 100,
   duration: 1,
 });
+
+console.log("✨ fresh commit!");
