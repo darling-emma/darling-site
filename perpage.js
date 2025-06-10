@@ -1,3 +1,5 @@
+console.log("perpage-connected");
+
 document.addEventListener("DOMContentLoaded", () => {
     gsap.registerPlugin(ScrollSmoother, SplitText)
 
