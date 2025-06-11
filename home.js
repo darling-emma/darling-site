@@ -1,11 +1,41 @@
-console.log("connected - home");
+console.log("connected - home - v2");
 
 document.addEventListener("DOMContentLoaded", (event) => {  
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
+    
+    // ScrollTriggered Timeline
+    function buildUsAnimation(bpSplit) {
+        return gsap.timeline({
+            scrollTrigger: {
+                id: "usAnimation",
+                trigger: ".about-us",
+                start: "top top",
+                end: "+=3000",
+                scrub: true,
+                pin: ".about-us",
+                onUpdate: function (self) {
+                    const progress = self.progress;
+                    if (window.usLottie) {
+                        window.usLottie.goToAndStop(window.usLottie.totalFrames * progress, true);
+                    } 
+                },
+            },
+        })
+        .fromTo(bpSplit[1].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } })
+        .to(bpSplit[1].lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" } })
 
+        .fromTo(bpSplit[0].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } }, "<0.5")
+        .to(bpSplit[0].lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" } })
+
+        .fromTo(bpSplit[2].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } }, "<0.5")
+        .to(bpSplit[2].lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" } })
+
+        .fromTo(bpSplit[3].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } }, "<0.5");
+    }
+
+    // SCROLLSMOOTHER - DESKTOP
     const matchMedia = gsap.matchMedia();
 
-    // Initialize ScrollSmoother, Desktop only
     matchMedia.add("(min-width: 768px)", () => {
         ScrollSmoother.create({
             wrapper: "#smooth-wrapper",
@@ -128,7 +158,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 });
                 
                 // Load Lottie
-                const usLottie = lottie.loadAnimation({
+                window.usLottie = lottie.loadAnimation({
                     container: document.getElementById("about-us-lottie"),
                     path: "https://cdn.prod.website-files.com/6418ab0e18a18160ffc38a6f/6807b14a50a2c42198f28c37_f8175d830f79db083f4bfce7b8d7a77e_Darling_Website_GetToKnowUs.json",
                     renderer: "svg",
@@ -136,14 +166,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 });
 
                 // Add CSS Variables to Lottie
-                if (usLottie) {
+                if (window.usLottie) {
                     usLottie.addEventListener("DOMLoaded", () => {
                         const svg = document.querySelector("#about-us-lottie svg");
                         const lines = svg.querySelectorAll(".lottie-us-line");
                         const fills = svg.querySelectorAll(".lottie-us-mask, .lottie-us-bg");
-
-                        console.log("lines", lines.length);
-                        console.log("fills", fills.length);
 
                         lines.forEach((line) => {
                             const path = line.querySelector("path");
@@ -157,37 +184,61 @@ document.addEventListener("DOMContentLoaded", (event) => {
                     });
                 };
 
-                // ScrollTriggered Timeline
-                const usAnimation = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: ".about-us",
-                        start: "top top",
-                        end: "+=3000",
-                        scrub: true,
-                        pin: ".about-us",
-                        markers: true,
-                        onUpdate: function (self) {
-                            const progress = self.progress;
-                            usLottie.goToAndStop(usLottie.totalFrames * progress, true);
-                        },
-                    },
-                });
-
-                // Add Text Animation to Timeline
-                usAnimation
-                .fromTo(bpSplit[0].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } })
-                .to(bpSplit[0].lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" } })
-
-                .fromTo(bpSplit[1].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } }, "<0.5")
-                .to(bpSplit[1].lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" } })
-
-                .fromTo(bpSplit[2].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } }, "<0.5")
-                .to(bpSplit[2].lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" } })
-
-                .fromTo(bpSplit[3].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } }, "<0.5");
+                buildUsAnimation(bpSplit);
 
             }, 100);
         });
     });
-});
 
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            document.fonts.ready.then(() => {
+                const bulletPoints = document.querySelectorAll(".about-text");
+
+                // Revert + Re-split
+                const bpSplit = Array.from(bulletPoints).map(bp => {
+                    if (bp._split) bp._split.revert();
+                    const split = SplitText.create(bp, {
+                        type: "lines",
+                        autoSplit: true,
+                    });
+                    bp._split = split;
+                    return split;
+                });
+
+                // Kill the existing ScrollTrigger + Timeline
+                ScrollTrigger.getById("usAnimation")?.kill(true);
+
+                // Rebuild the timeline
+                buildUsAnimation(bpSplit);
+            });
+        }, 250);
+    });
+
+    // FOOTER ANIMATION
+    // Load Lottie
+    window.footerLottie = lottie.loadAnimation({
+        container: document.getElementById("footer-lottie-div"),
+        path: "https://cdn.prod.website-files.com/6418ab0e18a18160ffc38a6f/666c8a5417e8d0638851db29_Footer_Area.json",
+        renderer: "svg",
+        autoplay: false,
+    });
+
+    let footerAnimation = gsap.timeline({
+        scrollTrigger: {
+                id: "footerAnimation",
+                trigger: ".footer",
+                start: "top 50%",
+                end: "bottom bottom",
+                scrub: true,
+                onUpdate: function (self) {
+                    const progress = self.progress;
+                    if (window.footerLottie) {
+                        window.footerLottie.goToAndStop((window.footerLottie.totalFrames - 1) * progress, true);
+                    } 
+                },
+            },
+    });
+});
