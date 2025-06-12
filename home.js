@@ -1,4 +1,4 @@
-console.log("connected - home - v2");
+console.log("connected - home - v3");
 
 document.addEventListener("DOMContentLoaded", (event) => {  
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
@@ -47,11 +47,28 @@ document.addEventListener("DOMContentLoaded", (event) => {
         });
     });
 
+    // LOAD ANIMATION
+    let heroSplit = SplitText.create(".subhero-text", {
+        type: "words",
+        autoSplit: true,
+        onSplit(self) {
+            gsap.from(self.words, {
+                y: -5,
+                opacity: 0,
+                stagger: {
+                    amount: 2
+                },
+                ease: "power2.out",
+                delay: 1,
+            });
+        }
+    });
+
     // HERO ANIMATION
     let heroTimeline = gsap.timeline({
         scrollTrigger: {
-            trigger: ".video-embed",
-            start: "center center",
+            trigger: ".subhero",
+            start: "top top",
             end: "+=2000",
             scrub: true,
             pin: ".subhero",
@@ -59,13 +76,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
     });
 
     heroTimeline
-    .to(".video-embed", { scale: 0.5, duration: 2 })
-    .to(".video-embed", { yPercent: -100, duration: 2 }, "-=0.5")
-    .to(".subhero-text-wrapper", { y: -50, opacity: 0, duration: 1 })
+    .to(".subhero-text-wrapper", { y: -50, opacity: 0 })
     .fromTo("html", 
         { "--color--darling-red": "#ed2024", "--color--white": "white" }, 
-        { "--color--darling-red": "white", "--color--white": "#ed2024" })
-    .from(".tertiary-text-wrapper", { y: 50, opacity: 0, duration: 1 }, "+=0.1");
+        { "--color--darling-red": "white", "--color--white": "#ed2024" }, "-=0.2")
+    .from(".tertiary-text-wrapper", { y: 50, opacity: 0 }, "-=0.2");
 
     // WORK ENTRANCE
     let workEntrance = gsap.timeline({
@@ -81,6 +96,22 @@ document.addEventListener("DOMContentLoaded", (event) => {
     .fromTo("html", 
         { "--color--white": "#ed2024" }, 
         { "--color--white": "black" });
+
+    // WORK CARD ANIMATION
+    let workCard = gsap.utils.toArray(".work-card");
+
+    workCard.forEach((item, i) => {
+        let wcAnimation = gsap.from(item, { opacity: 0, y: 10, paused: true });
+
+        ScrollTrigger.create({
+            trigger: item,
+            start: "top 80%",
+            end: "top 50%",
+            onEnter: () => wcAnimation.play(),
+            onLeaveBack: () => wcAnimation.reverse(),
+        });
+    });
+
 
     // WORK EXIT
     let workExit = gsap.timeline({
