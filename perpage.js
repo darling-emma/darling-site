@@ -1,4 +1,4 @@
-console.log("perpage-connected");
+console.log("connected - per page");
 
 document.addEventListener("DOMContentLoaded", () => {
     gsap.registerPlugin(ScrollSmoother, SplitText)
@@ -16,28 +16,5 @@ document.addEventListener("DOMContentLoaded", () => {
             ignoreMobileResize: true,
             normalizeScroll: true
         });
-    });
-
-    // Event listener for resizing / reload on resize
-    let resizeTimeout;
-    let initialWidth = window.innerWidth;
-    
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        if (Math.abs(window.innerWidth - initialWidth) > 50) {
-          const scrollY = window.scrollY;
-          sessionStorage.setItem("scrollY", scrollY);
-          location.reload();
-        }
-      }, 250);
-    });
-    
-    window.addEventListener("load", () => {
-      const savedScrollY = sessionStorage.getItem("scrollY");
-      if (savedScrollY !== null) {
-        window.scrollTo(0, parseInt(savedScrollY));
-        sessionStorage.removeItem("scrollY");
-      }
     });
 })
