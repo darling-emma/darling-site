@@ -1,21 +1,7 @@
-console.log("connected - work - v1");
+console.log("connected - work - v2");
 
 document.addEventListener("DOMContentLoaded", (event) => {
     gsap.set("html", { "--color--darling-red": "white" })
-    
-    // SCROLLSMOOTHER - DESKTOP
-    const matchMedia = gsap.matchMedia();
-
-    matchMedia.add("(min-width: 768px)", () => {
-        ScrollSmoother.create({
-            wrapper: "#smooth-wrapper",
-            content: "#smooth-content",
-            smooth: 1,
-            effects: true,
-            ignoreMobileResize: true,
-            normalizeScroll: true
-        });
-    });
 
     // WORK CARD ANIMATION
     let workCard = gsap.utils.toArray(".work-card");
