@@ -33,20 +33,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
         .fromTo(bpSplit[3].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } }, "<0.5");
     }
 
-    // SCROLLSMOOTHER - DESKTOP
-    const matchMedia = gsap.matchMedia();
-
-    matchMedia.add("(min-width: 768px)", () => {
-        ScrollSmoother.create({
-            wrapper: "#smooth-wrapper",
-            content: "#smooth-content",
-            smooth: 1,
-            effects: true,
-            ignoreMobileResize: true,
-            normalizeScroll: true
-        });
-    });
-
     // LOAD ANIMATION
     let heroSplit = SplitText.create(".subhero-text", {
         type: "words",
