@@ -1,4 +1,4 @@
-console.log("connected - per page - v2");
+console.log("connected - per page - v3");
 
 document.addEventListener("DOMContentLoaded", () => {
   gsap.registerPlugin(ScrollSmoother, SplitText)
@@ -32,20 +32,26 @@ document.addEventListener("DOMContentLoaded", () => {
       
       if (isClosed) {
         let menuOpen = gsap.timeline();
+
         menuOpen
         .set(menu, { display: "flex" })
         .to(menuTrigger, { rotate: 45 })
         .to(menu, { yPercent: 0 }, "<")
         .from(".mobile-link", { opacity: 0, stagger: 0.1 })
-        .from(bottomlinks, { opacity: 0 })
+        .from(bottomlinks, { opacity: 0 });
+
+        menuTrigger.dataset.open = "true";
       } else {
         let menuClose = gsap.timeline();
+
         menuClose
         .to(bottomlinks, { opacity: 0 })
         .to(".mobile-link", { opacity: 0, stagger: 0.1 })
         .to(menuTrigger, { rotate: 0 })
         .to(menu, { yPercent: -100 }, "<")
-        .set(menu, { display: "flex" })
+        .set(menu, { display: "flex" });
+
+        menuTrigger.dataset.open = "false";
       }
     });
 });
