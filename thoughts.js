@@ -1,10 +1,10 @@
-console.log("connected - thoughts - v1");
+console.log("connected - thoughts - v2");
 
 document.addEventListener("DOMContentLoaded", (event) => {
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
 
     // COLOR SET
-    gsap.set("html", { "--color--darling-red": "white", "--color--white": "black" });
+    gsap.set("html", { "--color--darling-red": "white" });
 
     // Blog Post Sharing Script
     const blogPostWrappers = document.querySelectorAll('.blog-post-wrapper');
