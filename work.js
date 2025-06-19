@@ -1,7 +1,10 @@
-console.log("connected - work - v2");
+console.log("connected - work - v3");
 
 document.addEventListener("DOMContentLoaded", (event) => {
-    gsap.set("html", { "--color--darling-red": "white" })
+    gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
+
+    // COLOR SET
+    gsap.set("html", { "--color--darling-red": "white", "--color--white": "black" });
 
     // WORK CARD ANIMATION
     let workCard = gsap.utils.toArray(".work-card");
@@ -33,7 +36,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         { "--color--black": "black" }, 
         { "--color--black": "#ed2024" });
 
-        // FOOTER ANIMATION
+    // FOOTER ANIMATION
     // Load Lottie
     window.footerLottie = lottie.loadAnimation({
         container: document.getElementById("footer-lottie-div"),
