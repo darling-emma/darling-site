@@ -1,4 +1,4 @@
-console.log("connected - home - v4");
+console.log("connected - home - v4.5");
 
 document.addEventListener("DOMContentLoaded", (event) => {  
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
@@ -145,20 +145,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
         }, i * 0.5);         
     });
 
-    // PHOTOS EXIT
-    let photoExit = gsap.timeline({
-        scrollTrigger: {
-            trigger: ".services",
-            start: "top 50%",
-            end: "top top",
-            scrub: true,
-        }
-    });
-
-    photoExit
-    .fromTo("html", 
-    { "--color--darling-red": "white", "--color--white": "#ed2024" }, 
-    { "--color--darling-red": "#ed2024", "--color--white": "white" });
+    photosTL.to("html", 
+        { "--color--darling-red": "#ed2024", "--color--white": "white" }
+    );
 
     // SERVICES ANIMATION
     matchM.add("(min-width: 992px)", () => {
@@ -316,4 +305,4 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 },
             },
     });
-});
+});    
