@@ -1,4 +1,4 @@
-console.log("connected - home - v4.5");
+console.log("connected - home - v5");
 
 document.addEventListener("DOMContentLoaded", (event) => {  
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
@@ -167,6 +167,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
             // Hover in
             item.addEventListener("mouseenter", () => {
 
+                gsap.set(".services-image", { display: "flex" });
                 gsap.to(relatedImage, { opacity: 1, duration: 0.1 });
 
                 servicesItems.forEach(other => {
@@ -181,12 +182,24 @@ document.addEventListener("DOMContentLoaded", (event) => {
             // Hover out
             item.addEventListener("mouseleave", () => {
 
-                gsap.to(relatedImage, { opacity: 0, duration: 0.1 })
+                gsap.to(relatedImage, { opacity: 0, duration: 0.1 });
+                gsap.set(".services-image", { display: "none" });
                 
                 servicesItems.forEach(item => {
                     gsap.to(item, { opacity: 1, duration: 0.1 });
                 });
             });
+        });
+
+        // Mouse Follow
+        gsap.set(".services-image-wrapper", { xPercent: -50, yPercent: -50 });
+
+        let imageXTo = gsap.quickTo(".services-image-wrapper", "x", { duration: 0.01, ease: "none" });
+        let imageYTo = gsap.quickTo(".services-image-wrapper", "y", { duration: 0.01, ease: "none" });
+
+        window.addEventListener("mousemove", m => {
+            imageXTo(m.clientX);
+            imageYTo(m.clientY);
         });
     });
 
@@ -296,6 +309,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 trigger: ".footer",
                 start: "top 50%",
                 end: "bottom bottom",
+                anticipatePin: true,
                 scrub: true,
                 onUpdate: function (self) {
                     const progress = self.progress;
@@ -305,4 +319,4 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 },
             },
     });
-});    
+});
