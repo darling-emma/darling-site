@@ -1,8 +1,28 @@
-console.log("connected - projectpage - v1");
+console.log("connected - projectpage - v1.5");
 
 document.addEventListener("DOMContentLoaded", function () {
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
 
+    // AUTOALPHA
+    gsap.to(".project-hero-text-wrapper", { autoAlpha: 1, duration: 0.2 });
+
+    // LOAD ANIMATION
+    let heroSplit = SplitText.create(".project-hero-text", {
+        type: "lines",
+        autoSplit: true,
+        onSplit(self) {
+            gsap.from(self.lines, {
+                y: -5,
+                opacity: 0,
+                stagger: {
+                    amount: 0.3
+                },
+                ease: "power2.out",
+                delay: 0.2,
+            });
+        }
+    });
+    
     // HERO ANIMATION
     let projectHeroTL = gsap.timeline({
         scrollTrigger: {
