@@ -9,26 +9,22 @@ document.addEventListener("DOMContentLoaded", (event) => {
     gsap.to(".hero-text-wrapper", { autoAlpha: 1, duration: 0.2 });
 
     // LOAD ANIMATION
-    window.addEventListener("load", () => {
-        document.fonts.ready.then(() => {
-            SplitText.create(".hero-text", {
-                type: "lines",
-                autoSplit: true,
-                onSplit(self) {
-                    gsap.from(self.lines, {
-                        y: -5,
-                        opacity: 0,
-                        stagger: {
-                            amount: 0.3
-                        },
-                        ease: "power2.out",
-                        delay: 0.2,
-                    });
-                }
+    SplitText.create(".hero-text", {
+        type: "lines",
+        autoSplit: true,
+        onSplit(self) {
+            gsap.from(self.lines, {
+                y: -5,
+                opacity: 0,
+                stagger: {
+                    amount: 0.3
+                },
+                ease: "power2.out",
+                delay: 0.2,
             });
-        });
+        }
     });
-    
+
 
     // WORK CARD ANIMATION
     let ogDistance, scrollSegment, expCard, singleCard;
