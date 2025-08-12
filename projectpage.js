@@ -7,11 +7,11 @@ document.addEventListener("DOMContentLoaded", function () {
     gsap.to(".project-hero-text-wrapper", { autoAlpha: 1, duration: 0.2 });
 
     // LOAD ANIMATION
-    let heroSplit = SplitText.create(".project-hero-text", {
+    SplitText.create(".project-hero-text", {
         type: "lines",
         autoSplit: true,
         onSplit(self) {
-            gsap.from(self.lines, {
+            return gsap.from(self.lines, {
                 y: -5,
                 opacity: 0,
                 stagger: {
