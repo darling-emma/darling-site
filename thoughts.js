@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
             start: "top 50%",
             end: "top top",
             scrub: true,
+            ease: "none",
         }
     });
 
@@ -78,6 +79,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 start: "top 50%",
                 end: "bottom bottom",
                 scrub: true,
+                ease: "none",
                 onUpdate: function (self) {
                     const progress = self.progress;
                     if (window.footerLottie) {
