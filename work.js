@@ -1,16 +1,19 @@
 console.log("connected - work - v3");
 
 document.addEventListener("DOMContentLoaded", (event) => {
-    gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
+    gsap.registerPlugin(ScrollTrigger)
+
+    // AUTOALPHA
+    gsap.to(".work", { autoAlpha: 1, duration: 0.2 });
 
     // COLOR SET
-    gsap.set("html", { "--color--darling-red": "white", "--color--white": "black" });
+    gsap.set("html", { "--color--darling-red": "white" });
 
     // WORK CARD ANIMATION
     let workCard = gsap.utils.toArray(".work-card");
 
-    workCard.forEach((item, i) => {
-        let wcAnimation = gsap.from(item, { opacity: 0, y: 10, paused: true });
+    workCard.forEach((item) => {
+        let wcAnimation = gsap.from(item, { opacity: 0, y: 10, paused: true, delay: 0.2 });
 
         ScrollTrigger.create({
             trigger: item,
@@ -28,6 +31,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
             start: "top 50%",
             end: "top top",
             scrub: true,
+            ease: "none",
         }
     });
 
@@ -43,6 +47,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         path: "https://cdn.prod.website-files.com/6418ab0e18a18160ffc38a6f/666c8a5417e8d0638851db29_Footer_Area.json",
         renderer: "svg",
         autoplay: false,
+        ease: "none",
     });
 
     let footerAnimation = gsap.timeline({
