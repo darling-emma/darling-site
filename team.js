@@ -290,4 +290,16 @@ $(document).ready(function() {
                 },
             },
     });
+
+    window.addEventListener("load", () => {
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 200);
+    });
+
+    window.addEventListener("resize", () => {
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 200);
+    });
 });
