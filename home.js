@@ -1,48 +1,15 @@
-console.log("connected - home - v5");
+console.log("connected - home - v6");
 
 document.addEventListener("DOMContentLoaded", (event) => {  
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
-    
-    const matchM = gsap.matchMedia();
 
-    // ScrollTriggered Timeline
-    function buildUsAnimation(bpSplit) {
-        return gsap.timeline({
-            scrollTrigger: {
-                id: "usAnimation",
-                trigger: ".about-us",
-                start: "top top",
-                end: "+=3000",
-                scrub: true,
-                pin: ".about-us",
-                onUpdate: function (self) {
-                    const progress = self.progress;
-                    if (window.usLottie) {
-                        window.usLottie.goToAndStop(window.usLottie.totalFrames * progress, true);
-                    } 
-                },
-            },
-        })
-        .fromTo(bpSplit[1].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } })
-        .to(bpSplit[1].lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" } })
+    const mm = gsap.matchMedia();
 
-        .fromTo(bpSplit[0].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } }, "<0.5")
-        .to(bpSplit[0].lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" } })
-
-        .fromTo(bpSplit[2].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } }, "<0.5")
-        .to(bpSplit[2].lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" } })
-
-        .fromTo(bpSplit[3].lines, { y: -5, opacity: 0, stagger: { each: 0.1 } }, { y: 0, opacity: 1, stagger: { each: 0.1 } }, "<0.5");
-    }
-
-    // COLOR SET
-    gsap.set("html", { "--color--darling-red": "#ed2024", "--color--white": "white" });
-    
     // AUTOALPHA
     gsap.to(".hero-text-wrapper", { autoAlpha: 1, duration: 0.2 });
 
     // LOAD ANIMATION
-    let heroSplit = SplitText.create(".hero-text", {
+    SplitText.create(".hero-text", {
         type: "lines",
         autoSplit: true,
         onSplit(self) {
@@ -59,56 +26,105 @@ document.addEventListener("DOMContentLoaded", (event) => {
     });
 
     // WORK CARD ANIMATION
-    const workImages = gsap.utils.toArray(".work-collection-item");
-    const workDescrips = gsap.utils.toArray(".work-descrip-item");
-    const singleImage = document.querySelector(".work-collection-item");
+    let ogDistance, scrollSegment, expCard, singleCard;
 
+    function calculateValues(isDesktop) {
+        const ogValue = isDesktop ? document.querySelector(".scroll-me").getBoundingClientRect().width : document.querySelector(".scroll-me").getBoundingClientRect().height;
+        const windowValue = isDesktop ? document.querySelector(".work").getBoundingClientRect().width : document.querySelector(".work").getBoundingClientRect().height;
+        ogDistance = ogValue - windowValue;
 
-    const originalWidth = singleImage.getBoundingClientRect().width;
-    const newWidth = originalWidth * 1.2;
+        const scrollMe = document.querySelector(".scroll-me");
+        const padding = parseFloat(
+            getComputedStyle(scrollMe)[isDesktop ? "paddingRight" : "paddingTop"]
+        );
 
-    const marginTotal = window.innerWidth <= 478
-        ? 8 * (workImages.length - 1)  // mobile
-        : 16 * (workImages.length + 1);// desktop (fallback)
-    const workWidth = originalWidth * (workImages.length - 1) + newWidth + marginTotal;
-    const distance = workWidth - window.innerWidth;
-    const overshoot = newWidth - originalWidth;
+        const workList = document.querySelector(".work-collection-list");
+        const gap = parseFloat(getComputedStyle(workList).gap);
 
-    const workDesktop = gsap.timeline({
-        scrollTrigger: {
-            trigger: ".work",
-            start: "top top",
-            end: "+=1500px",
-            scrub: 0.5,
-            pin: ".work",
-        }
-    });
+        singleCard = document.querySelector(".work-collection-item").getBoundingClientRect().width;
+        expCard = singleCard * 1.2;
 
-    for (let i = 0; i < workImages.length; i++) {
+        const extWidth = (padding * 2) + (gap * 5) + (singleCard * 5) + (singleCard * 1.2);
+        const extDistance = extWidth - windowValue;   
 
-        workDesktop.to(workImages[i], { width: newWidth });
-        workDesktop.to(workDescrips[i], { opacity: 1 }, "<");
-
-        workDesktop.to(workImages[i], { width: originalWidth });
-        workDesktop.to(workDescrips[i], { opacity: 0 }, "<");
-        workDesktop.to(workImages[i + 1], { width: newWidth }, "<");
-
-        workDesktop.to(workDescrips[i + 1], { opacity: 1 });
+        scrollSegment = extDistance / 5;
     }
-    
-    var horizontal = gsap.timeline({
-        scrollTrigger: {
-            trigger: ".work",
-            start: "top top",
-            end: "+=1500px",
-            scrub: 0.5,
+
+    mm.add({
+
+        isMobile: "(max-width: 478px)",
+        isDesktop: "(min-width: 479px)",
+
+    }, (context) => {
+
+        let { isMobile, isDesktop } = context.conditions;
+
+        calculateValues(isDesktop);
+
+        ScrollTrigger.addEventListener("refreshInit", () => calculateValues(isDesktop));
+
+        const cards = gsap.utils.toArray(".work-collection-item");
+        const descriptions = gsap.utils.toArray(".work-descrip-item");
+
+        gsap.set(descriptions[0], { display: "flex" });
+
+        let workTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".work",
+                start: "top top",
+                end: "+=3000",
+                scrub: true,
+                ease: "none",
+                pin: ".work",
+                invalidateOnRefresh: true,
+            }
+        });
+
+        workTL
+        .to(cards[0], { width: () => expCard, ease: "none", duration: 0.1 })
+        .to(descriptions[0], { opacity: 1, ease: "none", duration: 0.1}, "<")
+        .to({}, { duration: 0.05 }) // pause
+        .to(cards[0], { width: () => singleCard, ease: "none", duration: 0.1 }, ">")
+        .to(descriptions[0], { opacity: 0, ease: "none", duration: 0.1 }, "<")
+        .set(descriptions[0], { display: "none" }, ">");
+
+        for (let i = 1; i <= 4; i++) {
+            workTL
+                .to(".scroll-me", { 
+                    x: isDesktop ? () => `-=${scrollSegment}` : 0,
+                    y: isMobile ? () => `-=${scrollSegment}` : 0,
+                    ease: "none", 
+                    duration: 0.1 
+                })
+                .set(descriptions[i], { display: "flex" }, "<")    
+                .to(cards[i], { width: () => expCard, ease: "none", duration: 0.1 })
+                .to(descriptions[i], { opacity: 1, ease: "none", duration: 0.1 }, "<")
+                .to({}, { duration: 0.05 }) // pause
+                .to(cards[i], { width: () => singleCard, ease: "none", duration: 0.1 }, ">")
+                .to(descriptions[i], { opacity: 0, ease: "none", duration: 0.1 }, "<")
+                .set(descriptions[i], { display: "none" }, ">");
         }
+
+        workTL
+        .set(descriptions[5], { display: "flex" }, "<")
+        .to(".scroll-me", { 
+            x: isDesktop ? () => `-=${scrollSegment}` : 0,
+            y: isMobile ? () => `-=${scrollSegment}` : 0,  
+            ease: "none", 
+            duration: 0.1 
+        })
+        .to(cards[5], { width: () => expCard, ease: "none", duration: 0.1 }, "<")
+        .to(descriptions[5], { opacity: 1, ease: "none", duration: 0.1 }, "<")
+        .to({}, { duration: 0.05 }) // pause
+        .to(".scroll-me", { 
+            x: isDesktop ? () => `-${ogDistance}px` : 0, 
+            y: isMobile ? () => `-${ogDistance}px` : 0,
+            ease: "none", 
+            duration: 0.1 
+        })
+        .to(cards[5], { width: () => singleCard, ease: "none", duration: 0.1 }, "<");
     });
 
-    horizontal
-    .to(".scroll-me", { x: -distance, delay: 0.8, duration: 8 })
-    .to(".scroll-me", { x: -distance + overshoot, duration: 1 });
-    
     // SUBHERO ENTRANCE
     let subEntrance = gsap.timeline({
         scrollTrigger: {
@@ -124,6 +140,21 @@ document.addEventListener("DOMContentLoaded", (event) => {
     { "--color--darling-red": "#ed2024", "--color--white": "white" }, 
     { "--color--darling-red": "white", "--color--white": "#ed2024" });
 
+    // SERVICES GRID ANIMATION
+    function remToPx(rem) {
+        return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+    }
+
+    const pxValue = remToPx(6); 
+
+    ScrollTrigger.create({
+        trigger: ".pin-me",
+        start: `top ${pxValue}px`,
+        endTrigger: ".end-trigger",
+        end: `top ${pxValue}px`,
+        pin: ".pin-me",
+        scrub: true,
+    });
 
     // PHOTOS ANIMATION
     const photoEls = gsap.utils.toArray(".scale");
@@ -149,134 +180,81 @@ document.addEventListener("DOMContentLoaded", (event) => {
         { "--color--darling-red": "#ed2024", "--color--white": "white" }
     );
 
-    // SERVICES ANIMATION
-    matchM.add("(min-width: 992px)", () => {
-        // Select text
-        const servicesItems = document.querySelectorAll(".services-item");
-
-        // Set text to 100% opacity
-        gsap.set(".services-item", { opacity: 1 });
-
-        // Main loop
-        servicesItems.forEach(item => {
-            const id = item.id;
-            const relatedImage = document.querySelector(`.image-cover[id="${id}"]`);
-
-            gsap.set(relatedImage, { opacity: 0 });
-
-            // Hover in
-            item.addEventListener("mouseenter", () => {
-
-                gsap.set(".services-image", { display: "flex" });
-                gsap.to(relatedImage, { opacity: 1, duration: 0.1 });
-
-                servicesItems.forEach(other => {
-                    if (other !== item) {
-                        gsap.to(other, { opacity: 0.3, duration: 0.1 });
-                    } else {
-                        gsap.to(other, { opacity: 1, duration: 0.1 })
-                    }
-                });
-            });
-
-            // Hover out
-            item.addEventListener("mouseleave", () => {
-
-                gsap.to(relatedImage, { opacity: 0, duration: 0.1 });
-                gsap.set(".services-image", { display: "none" });
-                
-                servicesItems.forEach(item => {
-                    gsap.to(item, { opacity: 1, duration: 0.1 });
-                });
-            });
-        });
-
-        // Mouse Follow
-        gsap.set(".services-image-wrapper", { xPercent: -50, yPercent: -50 });
-
-        let imageXTo = gsap.quickTo(".services-image-wrapper", "x", { duration: 0.01, ease: "none" });
-        let imageYTo = gsap.quickTo(".services-image-wrapper", "y", { duration: 0.01, ease: "none" });
-
-        window.addEventListener("mousemove", m => {
-            imageXTo(m.clientX);
-            imageYTo(m.clientY);
-        });
+    // ABOUT US ANIMATION
+    // Load Lottie
+    window.usLottie = lottie.loadAnimation({
+        container: document.getElementById("about-us-lottie"),
+        path: "https://cdn.prod.website-files.com/6418ab0e18a18160ffc38a6f/6807b14a50a2c42198f28c37_f8175d830f79db083f4bfce7b8d7a77e_Darling_Website_GetToKnowUs.json",
+        renderer: "svg",
+        autoplay: false,
     });
 
-    // GET TO KNOW US ANIMATION
-    window.addEventListener("load", () => {
-        document.fonts.ready.then(() => {
-            setTimeout(() => {
-                // SplitText
-                const bulletPoints = document.querySelectorAll(".about-text");
-                const bpSplit = Array.from(bulletPoints).map(bp => {
-                    if (bp._split) bp._split.revert();
-                    const split = SplitText.create(bp, {
-                        type: "lines",
-                        autoSplit: true,
-                    });
-                    bp._split = split;
-                    return split;
-                });
-                
-                // Load Lottie
-                window.usLottie = lottie.loadAnimation({
-                    container: document.getElementById("about-us-lottie"),
-                    path: "https://cdn.prod.website-files.com/6418ab0e18a18160ffc38a6f/6807b14a50a2c42198f28c37_f8175d830f79db083f4bfce7b8d7a77e_Darling_Website_GetToKnowUs.json",
-                    renderer: "svg",
-                    autoplay: false,
-                });
+    // Add CSS Variables to Lottie
+    if (window.usLottie) {
+        usLottie.addEventListener("DOMLoaded", () => {
+            const svg = document.querySelector("#about-us-lottie svg");
+            const lines = svg.querySelectorAll(".lottie-us-line");
+            const fills = svg.querySelectorAll(".lottie-us-mask, .lottie-us-bg");
 
-                // Add CSS Variables to Lottie
-                if (window.usLottie) {
-                    usLottie.addEventListener("DOMLoaded", () => {
-                        const svg = document.querySelector("#about-us-lottie svg");
-                        const lines = svg.querySelectorAll(".lottie-us-line");
-                        const fills = svg.querySelectorAll(".lottie-us-mask, .lottie-us-bg");
+            lines.forEach((line) => {
+                const path = line.querySelector("path");
+                if (path) path.style.stroke = "var(--color--darling-red)"; 
+            });
 
-                        lines.forEach((line) => {
-                            const path = line.querySelector("path");
-                            if (path) path.style.stroke = "var(--color--darling-red)"; 
-                        });
-
-                        fills.forEach((fill) => {
-                            const path = fill.querySelector("path");
-                            if (path) path.style.fill = "var(--color--white)"; 
-                        });
-                    });
-                };
-
-                buildUsAnimation(bpSplit);
-
-            }, 100);
+            fills.forEach((fill) => {
+                const path = fill.querySelector("path");
+                if (path) path.style.fill = "var(--color--white)"; 
+            });
         });
+    };
+
+    let tl = gsap.timeline({
+        scrollTrigger: {
+                id: "usAnimation",
+                trigger: ".about-us",
+                start: "top top",
+                end: "+=3000",
+                scrub: true,
+                pin: ".about-us",
+                onUpdate: function (self) {
+                    const progress = self.progress;
+                    if (window.usLottie) {
+                        window.usLottie.goToAndStop(window.usLottie.totalFrames * progress, true);
+                    } 
+                },
+            },
     });
 
-    let resizeTimeout;
-    window.addEventListener("resize", () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            document.fonts.ready.then(() => {
-                const bulletPoints = document.querySelectorAll(".about-text");
+    gsap.utils.toArray(".about-text").forEach((text, i) => {
+        let animation;
 
-                // Revert + Re-split
-                const bpSplit = Array.from(bulletPoints).map(bp => {
-                    if (bp._split) bp._split.revert();
-                    const split = SplitText.create(bp, {
-                        type: "lines",
-                        autoSplit: true,
-                    });
-                    bp._split = split;
-                    return split;
-                });
+        if (i === 0) { 
+            gsap.set(text, { y: 0, opacity: 1 }); 
+        }
 
-                // Kill the existing ScrollTrigger + Timeline
-                ScrollTrigger.getById("usAnimation")?.kill(true);
-
-                // Rebuild the timeline
-                buildUsAnimation(bpSplit);
-            });
-        }, 250);
+        SplitText.create(text, {
+            type: "lines",
+            autoSplit: "true",
+            onSplit(self) {
+                animation && animation.revert();
+                let startTime = animation ? animation.startTime() : "+=0";
+                if (i === 0) {
+                    animation = gsap.timeline()
+                    .to(self.lines, { duration: 0.9 })
+                    .fromTo(self.lines, { y: 0, opacity: 1 }, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" }, duration: 0.3 })
+                } else if (i > 0 && i < 3) {
+                    animation = gsap.timeline()
+                    .fromTo(self.lines, { y: -5, opacity: 0 }, { y: 0, opacity: 1, stagger: { each: 0.1 }, duration: 0.3 })
+                    .to(self.lines, { duration: 0.6 })
+                    .to(self.lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" }, duration: 0.3 });
+                } else {
+                    animation = gsap.timeline()
+                    .fromTo(self.lines, { y: -5, opacity: 0 }, { y: 0, opacity: 1, stagger: { each: 0.1 }, duration: 0.3 })
+                    .to(self.lines, { duration: 0.9 });
+                }
+                tl.add(animation, startTime);
+            }
+        });
     });
 
     // FOOTER ENTRANCE
@@ -284,7 +262,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         scrollTrigger: {
             trigger: ".footer",
             start: "top 50%",
-            end: "top top",
+            end: "bottom bottom",
             scrub: true,
         }
     });
@@ -318,5 +296,17 @@ document.addEventListener("DOMContentLoaded", (event) => {
                     } 
                 },
             },
+    });
+
+    window.addEventListener("load", () => {
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 200);
+    });
+
+    window.addEventListener("resize", () => {
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 200);
     });
 });
