@@ -1,10 +1,23 @@
-console.log("connected - thoughts - v2");
+console.log("connected - thoughts - v3");
 
 document.addEventListener("DOMContentLoaded", (event) => {
-    gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
+    gsap.registerPlugin(ScrollTrigger)
 
     // COLOR SET
     gsap.set("html", { "--color--darling-red": "white" });
+
+    // AUTOALPHA
+    gsap.to(".blog-collection-list", { autoAlpha: 1, duration: 0.2 });
+
+    // LOAD ANIMATION
+    gsap.from(".blog-collection-item", {
+        opacity: 0,
+        stagger: {
+            amount: 0.3
+        },
+        ease: "power2.out",
+        delay: 0.2,
+    });
 
     // Blog Post Sharing Script
     const blogPostWrappers = document.querySelectorAll('.blog-post-wrapper');
