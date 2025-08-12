@@ -9,21 +9,26 @@ document.addEventListener("DOMContentLoaded", (event) => {
     gsap.to(".hero-text-wrapper", { autoAlpha: 1, duration: 0.2 });
 
     // LOAD ANIMATION
-    SplitText.create(".hero-text", {
-        type: "lines",
-        autoSplit: true,
-        onSplit(self) {
-            gsap.from(self.lines, {
-                y: -5,
-                opacity: 0,
-                stagger: {
-                    amount: 0.3
-                },
-                ease: "power2.out",
-                delay: 0.2,
+    window.addEventListener("load", () => {
+        document.fonts.ready.then(() => {
+            SplitText.create(".hero-text", {
+                type: "lines",
+                autoSplit: true,
+                onSplit(self) {
+                    gsap.from(self.lines, {
+                        y: -5,
+                        opacity: 0,
+                        stagger: {
+                            amount: 0.3
+                        },
+                        ease: "power2.out",
+                        delay: 0.2,
+                    });
+                }
             });
-        }
+        });
     });
+    
 
     // WORK CARD ANIMATION
     let ogDistance, scrollSegment, expCard, singleCard;
@@ -74,7 +79,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 start: "top top",
                 end: "+=3000",
                 scrub: true,
-                ease: "none",
                 pin: ".work",
                 invalidateOnRefresh: true,
             }
@@ -132,6 +136,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
             start: "top 50%",
             end: "top top",
             scrub: true,
+            ease: "none",
         }
     });
 
@@ -154,25 +159,27 @@ document.addEventListener("DOMContentLoaded", (event) => {
         end: `top ${pxValue}px`,
         pin: ".pin-me",
         scrub: true,
+        ease: "none",
     });
 
     // PHOTOS ANIMATION
     const photoEls = gsap.utils.toArray(".scale");
     const photosTL = gsap.timeline({
         scrollTrigger: {
-        trigger: ".photos",
-        pin: ".photos",
-        start: "top top",
-        end: "+=1500",
-        scrub: true,
+            trigger: ".photos",
+            pin: ".photos",
+            start: "top top",
+            end: "+=1500",
+            scrub: true,
+            ease: "none",
         }
     });
 
     photoEls.forEach((el, i) => {
         photosTL.to(el, {
-        scale: 1.005,
-        duration: 1,      
-        ease: "none"
+            scale: 1.005,
+            duration: 1,      
+            ease: "none"
         }, i * 0.5);         
     });
 
@@ -216,6 +223,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 end: "+=3000",
                 scrub: true,
                 pin: ".about-us",
+                ease: "none",
                 onUpdate: function (self) {
                     const progress = self.progress;
                     if (window.usLottie) {
@@ -225,37 +233,43 @@ document.addEventListener("DOMContentLoaded", (event) => {
             },
     });
 
-    gsap.utils.toArray(".about-text").forEach((text, i) => {
-        let animation;
+    window.addEventListener("load", () => {
+        document.fonts.ready.then(() => {
+            gsap.utils.toArray(".about-text").forEach((text, i) => {
+                let animation;
 
-        if (i === 0) { 
-            gsap.set(text, { y: 0, opacity: 1 }); 
-        }
-
-        SplitText.create(text, {
-            type: "lines",
-            autoSplit: "true",
-            onSplit(self) {
-                animation && animation.revert();
-                let startTime = animation ? animation.startTime() : "+=0";
-                if (i === 0) {
-                    animation = gsap.timeline()
-                    .to(self.lines, { duration: 0.9 })
-                    .fromTo(self.lines, { y: 0, opacity: 1 }, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" }, duration: 0.3 })
-                } else if (i > 0 && i < 3) {
-                    animation = gsap.timeline()
-                    .fromTo(self.lines, { y: -5, opacity: 0 }, { y: 0, opacity: 1, stagger: { each: 0.1 }, duration: 0.3 })
-                    .to(self.lines, { duration: 0.6 })
-                    .to(self.lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" }, duration: 0.3 });
-                } else {
-                    animation = gsap.timeline()
-                    .fromTo(self.lines, { y: -5, opacity: 0 }, { y: 0, opacity: 1, stagger: { each: 0.1 }, duration: 0.3 })
-                    .to(self.lines, { duration: 0.9 });
+                if (i === 0) { 
+                    gsap.set(text, { y: 0, opacity: 1 }); 
                 }
-                tl.add(animation, startTime);
-            }
+
+                SplitText.create(text, {
+                    type: "lines",
+                    autoSplit: true,
+                    onSplit(self) {
+                        animation && animation.revert();
+                        let startTime = animation ? animation.startTime() : "+=0";
+                        if (i === 0) {
+                            animation = gsap.timeline()
+                            .to(self.lines, { duration: 0.9 })
+                            .fromTo(self.lines, { y: 0, opacity: 1 }, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" }, duration: 0.3 })
+                        } else if (i > 0 && i < 3) {
+                            animation = gsap.timeline()
+                            .fromTo(self.lines, { y: -5, opacity: 0 }, { y: 0, opacity: 1, stagger: { each: 0.1 }, duration: 0.3 })
+                            .to(self.lines, { duration: 0.6 })
+                            .to(self.lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" }, duration: 0.3 });
+                        } else {
+                            animation = gsap.timeline()
+                            .fromTo(self.lines, { y: -5, opacity: 0 }, { y: 0, opacity: 1, stagger: { each: 0.1 }, duration: 0.3 })
+                            .to(self.lines, { duration: 0.9 });
+                        }
+                        tl.add(animation, startTime);
+                    }
+                });
+            });
         });
     });
+
+    
 
     // FOOTER ENTRANCE
     let footerEntrance = gsap.timeline({
@@ -264,6 +278,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
             start: "top 50%",
             end: "bottom bottom",
             scrub: true,
+            ease: "none",
         }
     });
 
@@ -287,7 +302,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 trigger: ".footer",
                 start: "top 50%",
                 end: "bottom bottom",
-                anticipatePin: true,
+                ease: "none",
                 scrub: true,
                 onUpdate: function (self) {
                     const progress = self.progress;
