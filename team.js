@@ -10,24 +10,20 @@ $(document).ready(function() {
     gsap.to(".image-trio", { autoAlpha: 1, duration: 1, ease: "power2.out", });
 
     // LOAD ANIMATION
-    window.addEventListener("load", () => {
-        document.fonts.ready.then(() => {
-            SplitText.create(".brochure-para-large", {
-                type: "lines",
-                autoSplit: true,
-                onSplit(self) {
-                    return gsap.from(self.lines, {
-                        y: -5,
-                        opacity: 0,
-                        stagger: {
-                            amount: 1
-                        },
-                        ease: "power2.out",
-                        delay: 0.2,
-                    });
-                }
+    SplitText.create(".brochure-para-large", {
+        type: "lines",
+        autoSplit: true,
+        onSplit(self) {
+            return gsap.from(self.lines, {
+                y: -5,
+                opacity: 0,
+                stagger: {
+                    amount: 1
+                },
+                ease: "power2.out",
+                delay: 0.2,
             });
-        });
+        }
     });
 
     gsap.from(".team-image-item", {
