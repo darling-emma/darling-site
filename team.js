@@ -108,6 +108,7 @@ $(document).ready(function() {
                     end: () => `+=${endValue}`,
                     scrub: true,
                     pin: true,
+                    invalidateOnRefresh: true,
                     ease: "none",
                 }
             });
