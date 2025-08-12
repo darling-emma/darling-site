@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         type: "lines",
         autoSplit: true,
         onSplit(self) {
-            gsap.from(self.lines, {
+            return gsap.from(self.lines, {
                 y: -5,
                 opacity: 0,
                 stagger: {
