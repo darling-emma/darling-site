@@ -1,27 +1,20 @@
-console.log("connected - home - v6");
+console.log("connected - home - v6.5");
 
 document.addEventListener("DOMContentLoaded", (event) => {  
-    gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
+    gsap.registerPlugin(ScrollTrigger, SplitText)
 
     const mm = gsap.matchMedia();
-
-    // AUTOALPHA
-    gsap.to(".hero-text-wrapper", { autoAlpha: 1, duration: 0.2 });
 
     // LOAD ANIMATION
     SplitText.create(".hero-text", {
         type: "lines",
         autoSplit: true,
         onSplit(self) {
-            return gsap.from(self.lines, {
-                y: -5,
-                opacity: 0,
-                stagger: {
-                    amount: 0.3
-                },
-                ease: "power2.out",
-                delay: 0.2,
-            });
+            return gsap.timeline()
+            .set(".hero-text", { visibility: "visible" })
+            .set(".hero-text", { opacity: 1 }, "<")
+            .set(self.lines, { opacity: 0, y: -5 }, "<")
+            .to(self.lines, { y: 0, opacity: 1, ease: "power2.out", duration: 0.3, stagger: 0.15 })
         }
     });
 
@@ -292,7 +285,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         autoplay: false,
     });
 
-    let footerAnimation = gsap.timeline({
+    gsap.timeline({
         scrollTrigger: {
                 id: "footerAnimation",
                 trigger: ".footer",
