@@ -11,8 +11,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         autoSplit: true,
         onSplit(self) {
             return gsap.timeline()
-            .set(".hero-text", { visibility: "visible" })
-            .set(".hero-text", { opacity: 1 }, "<")
+            .set(".hero-text", { visibility: "visible", opacity: 1 })
             .set(self.lines, { opacity: 0, y: -5 }, "<")
             .to(self.lines, { y: 0, opacity: 1, ease: "power2.out", duration: 0.3, stagger: 0.15 })
         }
