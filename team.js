@@ -1,38 +1,23 @@
-console.log("connected - team - v2");
+console.log("connected - team - v2.5");
 
 $(document).ready(function() {
     gsap.registerPlugin(SplitText, ScrollTrigger)
 
     const mm = gsap.matchMedia();
 
-    // AUTOALPHA
-    gsap.to(".team-hero", { autoAlpha: 1, duration: 0.2 });
-    gsap.to(".image-trio", { autoAlpha: 1, duration: 1, ease: "power2.out", });
-
     // LOAD ANIMATION
     SplitText.create(".brochure-para-large", {
         type: "lines",
         autoSplit: true,
         onSplit(self) {
-            return gsap.from(self.lines, {
-                y: -5,
-                opacity: 0,
-                stagger: {
-                    amount: 1
-                },
-                ease: "power2.out",
-                delay: 0.2,
-            });
+            return gsap.timeline()
+            .set(".brochure-para-large", { visibility: "visible", opacity: 1 })
+            .set(".team-image-item", { visibility: "visible" })
+            .set(self.lines, { opacity: 0, y: -5 }, "<")
+            .addLabel("start")
+            .to(self.lines, { y: 0, opacity: 1, ease: "power2.out", duration: 0.3, stagger: 0.15 }, "start")
+            .to(".team-image-item", { opacity: 1, ease: "power2.out", duration: 0.3, stagger: 0.15 }, "start")
         }
-    });
-
-    gsap.from(".team-image-item", {
-        opacity: 0,
-        stagger: {
-            amount: 1
-        },
-        ease: "power2.out",
-        delay: 0.2,
     });
 
     // TRIO ANIMATION
@@ -271,7 +256,7 @@ $(document).ready(function() {
         autoplay: false,
     });
 
-    let footerAnimation = gsap.timeline({
+    gsap.timeline({
         scrollTrigger: {
                 id: "footerAnimation",
                 trigger: ".footer",
