@@ -1,4 +1,4 @@
-console.log("connected - thoughts - v3");
+console.log("connected - thoughts - v3.5");
 
 document.addEventListener("DOMContentLoaded", (event) => {
     gsap.registerPlugin(ScrollTrigger)
@@ -6,18 +6,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
     // COLOR SET
     gsap.set("html", { "--color--darling-red": "white" });
 
-    // AUTOALPHA
-    gsap.to(".blog-collection-list", { autoAlpha: 1, duration: 0.2 });
-
     // LOAD ANIMATION
-    gsap.from(".blog-collection-item", {
-        opacity: 0,
-        stagger: {
-            amount: 0.3
-        },
-        ease: "power2.out",
-        delay: 0.2,
-    });
+    gsap.timeline()
+    .set(".blog-collection-item", { visibility: "visible", y: -5 })
+    .to(".blog-collection-item", { opacity: 1, y: 0, ease: "power2.out", duration: 0.3, stagger: 0.15 });
 
     // Blog Post Sharing Script
     const blogPostWrappers = document.querySelectorAll('.blog-post-wrapper');
@@ -72,7 +64,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         autoplay: false,
     });
 
-    let footerAnimation = gsap.timeline({
+    gsap.timeline({
         scrollTrigger: {
                 id: "footerAnimation",
                 trigger: ".footer",
