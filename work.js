@@ -1,44 +1,50 @@
-console.log("connected - work - v3");
+console.log("connected - work - v4");
 
 document.addEventListener("DOMContentLoaded", (event) => {
     gsap.registerPlugin(ScrollTrigger)
 
-    // AUTOALPHA
-    gsap.to(".work", { autoAlpha: 1, duration: 0.2 });
-
     // COLOR SET
     gsap.set("html", { "--color--darling-red": "white" });
+
+    // LOAD ANIMATION
+    gsap.timeline()
+    .set(".work-page-collection-wrapper", { visibility: "visible", y: 5 })
+    .to(".work-page-collection-wrapper", { opacity: 1, y: 0, ease: "power2.out", duration: 0.3 });
 
     // WORK CARD ANIMATION
     let workCard = gsap.utils.toArray(".work-card");
 
     workCard.forEach((item) => {
-        let wcAnimation = gsap.from(item, { opacity: 0, y: 10, paused: true, delay: 0.2 });
-
-        ScrollTrigger.create({
-            trigger: item,
-            start: "top 90%",
-            end: "top 50%",
-            onEnter: () => wcAnimation.play(),
-            onLeaveBack: () => wcAnimation.reverse(),
+        gsap.set(item, { opacity: 0, y: 10 });
+        
+        gsap.to(item, {
+            opacity: 1,
+            y: 0,
+            scrollTrigger: {
+                trigger: item,
+                start: "top 90%",
+                end: "top 50%",
+                toggleActions: "play none none reverse",
+                invalidateOnRefresh: true,
+            }
         });
     });
 
     // FOOTER ENTRANCE
-    let footerEntrance = gsap.timeline({
+    footerEntrance
+    gsap.fromTo("html", { 
+        "--color--black": "black" 
+    }, { 
+        "--color--black": "#ed2024",
         scrollTrigger: {
             trigger: ".footer",
             start: "top 50%",
             end: "top top",
             scrub: true,
             ease: "none",
+            invalidateOnRefresh: true
         }
     });
-
-    footerEntrance
-    .fromTo("html", 
-        { "--color--black": "black" }, 
-        { "--color--black": "#ed2024" });
 
     // FOOTER ANIMATION
     // Load Lottie
@@ -50,13 +56,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
         ease: "none",
     });
 
-    let footerAnimation = gsap.timeline({
+    gsap.timeline({
         scrollTrigger: {
                 id: "footerAnimation",
                 trigger: ".footer",
                 start: "top 50%",
                 end: "bottom bottom",
                 scrub: true,
+                invalidateOnRefresh: true,
                 onUpdate: function (self) {
                     const progress = self.progress;
                     if (window.footerLottie) {
@@ -65,4 +72,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 },
             },
     });
+
+    // SCROLL TRIGGER REFRESH
+    function refreshScroll() {
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 200);
+    }
+
+    window.addEventListener("load", refreshScroll);
+    window.addEventListener("resize", refreshScroll);
 });
