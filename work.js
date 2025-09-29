@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
     });
 
     // FOOTER ENTRANCE
-    footerEntrance
     gsap.fromTo("html", { 
         "--color--black": "black" 
     }, { 
