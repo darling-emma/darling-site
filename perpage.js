@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     wrapper: "#smooth-wrapper",
     content: "#smooth-content",
     smooth: 1,
+    smoothTouch: 0.1,
     ignoreMobileResize: true,
     normalizeScroll: true
   });
