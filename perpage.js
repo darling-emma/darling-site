@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     content: "#smooth-content",
     smooth: 1,
     ignoreMobileResize: true,
+    normalizeScroll: true,
   });
 
   // Menu animation
