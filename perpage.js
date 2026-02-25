@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .to(".mobile-link", { opacity: 0, stagger: -0.1, duration: 0.3 }, "<")
       .to(menuTrigger, { rotate: 0 })
       .to(menu, { yPercent: -100 }, "<")
-      .set(menu, { display: "flex" })
+      .set(menu, { display: "none" })
       .set(".mobile-link", { opacity: 1 }, "<")
       .set(bottomlinks, { opacity: 1 }, "<");
 
