@@ -1,143 +1,168 @@
-console.log("connected - home - v6.5");
+console.log("connected - home - June 2026");
 
 document.addEventListener("DOMContentLoaded", (event) => {  
-    gsap.registerPlugin(ScrollTrigger, SplitText)
+    gsap.registerPlugin(ScrollTrigger, SplitText, Flip)
 
-    const mm = gsap.matchMedia();
+    let mm = gsap.matchMedia();
 
-    // LOAD ANIMATION
-    SplitText.create(".hero-text", {
+    // COLOR SET
+    gsap.set("html", { 
+        "--color--darling-red": "#ec1115", 
+        "--color--white": "white" 
+    });
+
+    // HERO TEXT
+    SplitText.create(".home-hero-heading", {
         type: "lines",
         autoSplit: true,
         onSplit(self) {
             return gsap.timeline()
-            .set(".hero-text", { visibility: "visible", opacity: 1 })
-            .set(self.lines, { opacity: 0, y: -5 }, "<")
-            .to(self.lines, { y: 0, opacity: 1, ease: "power2.out", duration: 0.3, stagger: 0.15 })
+            .set(".home-hero-heading", { visibility: "visible", opacity: 1 })
+            .from(self.lines, { y: -5, opacity: 0, stagger: { amount: 0.5 }, delay: 1.5 });
         }
     });
-
-
-    // WORK CARD ANIMATION
-    let ogDistance, scrollSegment, expCard, singleCard;
-
-    function calculateValues(isDesktop) {
-        const ogValue = isDesktop ? document.querySelector(".scroll-me").getBoundingClientRect().width : document.querySelector(".scroll-me").getBoundingClientRect().height;
-        const windowValue = isDesktop ? document.querySelector(".work").getBoundingClientRect().width : document.querySelector(".work").getBoundingClientRect().height;
-        ogDistance = ogValue - windowValue;
-
-        const scrollMe = document.querySelector(".scroll-me");
-        const padding = parseFloat(
-            getComputedStyle(scrollMe)[isDesktop ? "paddingRight" : "paddingTop"]
-        );
-
-        const workList = document.querySelector(".work-collection-list");
-        const gap = parseFloat(getComputedStyle(workList).gap);
-
-        singleCard = document.querySelector(".work-collection-item").getBoundingClientRect().width;
-        expCard = singleCard * 1.2;
-
-        const extWidth = (padding * 2) + (gap * 5) + (singleCard * 5) + (singleCard * 1.2);
-        const extDistance = extWidth - windowValue;   
-
-        scrollSegment = extDistance / 5;
+    
+    // VIDEO + NAV ANIMATION
+    function getWidth() {
+        return window.innerWidth;
     }
 
-    mm.add({
+    function getHeight () {
+        return window.innerHeight;
+    }
 
-        isMobile: "(max-width: 478px)",
-        isDesktop: "(min-width: 479px)",
-
-    }, (context) => {
-
-        let { isMobile, isDesktop } = context.conditions;
-
-        calculateValues(isDesktop);
-
-        ScrollTrigger.addEventListener("refreshInit", () => calculateValues(isDesktop));
-
-        const cards = gsap.utils.toArray(".work-collection-item");
-        const descriptions = gsap.utils.toArray(".work-descrip-item");
-
-        gsap.set(descriptions[0], { display: "flex" });
-
-        let workTL = gsap.timeline({
-            scrollTrigger: {
-                trigger: ".work",
-                start: "top top",
-                end: "+=3000",
-                scrub: true,
-                pin: ".work",
-                invalidateOnRefresh: true,
-            }
-        });
-
-        workTL
-        .to(cards[0], { width: () => expCard, ease: "none", duration: 0.1 })
-        .to(descriptions[0], { opacity: 1, ease: "none", duration: 0.1}, "<")
-        .to({}, { duration: 0.05 }) // pause
-        .to(cards[0], { width: () => singleCard, ease: "none", duration: 0.1 }, ">")
-        .to(descriptions[0], { opacity: 0, ease: "none", duration: 0.1 }, "<")
-        .set(descriptions[0], { display: "none" }, ">");
-
-        for (let i = 1; i <= 4; i++) {
-            workTL
-                .to(".scroll-me", { 
-                    x: isDesktop ? () => `-=${scrollSegment}` : 0,
-                    y: isMobile ? () => `-=${scrollSegment}` : 0,
-                    ease: "none", 
-                    duration: 0.1 
-                })
-                .set(descriptions[i], { display: "flex" }, "<")    
-                .to(cards[i], { width: () => expCard, ease: "none", duration: 0.1 })
-                .to(descriptions[i], { opacity: 1, ease: "none", duration: 0.1 }, "<")
-                .to({}, { duration: 0.05 }) // pause
-                .to(cards[i], { width: () => singleCard, ease: "none", duration: 0.1 }, ">")
-                .to(descriptions[i], { opacity: 0, ease: "none", duration: 0.1 }, "<")
-                .set(descriptions[i], { display: "none" }, ">");
-        }
-
-        workTL
-        .set(descriptions[5], { display: "flex" }, "<")
-        .to(".scroll-me", { 
-            x: isDesktop ? () => `-=${scrollSegment}` : 0,
-            y: isMobile ? () => `-=${scrollSegment}` : 0,  
-            ease: "none", 
-            duration: 0.1 
-        })
-        .to(cards[5], { width: () => expCard, ease: "none", duration: 0.1 }, "<")
-        .to(descriptions[5], { opacity: 1, ease: "none", duration: 0.1 }, "<")
-        .to({}, { duration: 0.05 }) // pause
-        .to(".scroll-me", { 
-            x: isDesktop ? () => `-${ogDistance}px` : 0, 
-            y: isMobile ? () => `-${ogDistance}px` : 0,
-            ease: "none", 
-            duration: 0.1 
-        })
-        .to(cards[5], { width: () => singleCard, ease: "none", duration: 0.1 }, "<");
-    });
-
-    // SUBHERO ENTRANCE
-    let subEntrance = gsap.timeline({
-        scrollTrigger: {
-            trigger: ".subhero",
-            start: "top 50%",
-            end: "top top",
-            scrub: true,
-            ease: "none",
-        }
-    });
-
-    subEntrance
-    .fromTo("html", 
-    { "--color--darling-red": "#ed2024", "--color--white": "white" }, 
-    { "--color--darling-red": "white", "--color--white": "#ed2024" });
-
-    // SERVICES GRID ANIMATION
     function remToPx(rem) {
         return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     }
 
+    mm.add({
+        isMobile: "(max-width: 479px)",
+        isDesktop: "(min-width: 480px)"
+    }, (context) => {
+        let { isMobile, isDesktop } = context.conditions;
+
+        let width = () => {
+            let padding = isMobile ? remToPx(2) : remToPx(4);
+            return getWidth() - padding;
+        };
+        let height = () => {
+            let padding = isMobile ? remToPx(2) : remToPx(4);
+            let baseWidth = getWidth() - padding;
+            return baseWidth * 0.5625;
+        };
+        let mobileHeight = () => {
+            let mobilePadding = remToPx(4);
+            return getHeight - mobilePadding;
+        }
+
+        let tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".video-hero-wrapper",
+                start: "top 35%",
+                end: isMobile ? "bottom 90%" : "+=250",
+                scrub: true,
+                ease: "none",
+                invalidateOnRefresh: true,
+            },
+        });
+
+        if (isMobile) {
+            tl
+            .to(".video-hero-div", { width: () => width() + "px", height: () => mobileHeight() + "px" })
+            .to(".video-hero-div", { height: () => height() + "px" });
+        } else {
+            tl.to(".video-hero-div", { width: () => width() + "px", height: () => height() + "px" });
+        }
+    });
+    
+    // XL TEXT HORIZONTAL SCROLL
+    let travelDistance;
+
+    function calculateXLText() {
+        const ticker = document.querySelector(".home-ticker-inner");;
+        const gap = parseFloat(getComputedStyle(ticker).gap);
+        const measure = document.querySelector(".textwrap-none");
+        const measureWidth = measure.getBoundingClientRect().width;
+        travelDistance = measureWidth + gap;
+    }
+
+    window.addEventListener("load", () => {
+        document.fonts.ready.then(() => {
+            calculateXLText();
+            ScrollTrigger.addEventListener("refreshInit", () => calculateXLText());
+
+            gsap.to("#ticker-top", {
+                x: () => travelDistance * -1,
+                duration: 17, 
+                ease: "none",
+                repeat: -1
+            });
+
+            gsap.to("#ticker-bottom", {
+                x: () => travelDistance,
+                duration: 17, 
+                ease: "none",
+                repeat: -1
+            });
+        });
+    });
+
+    // WORK ENTRANCE
+    gsap.fromTo("html", { 
+        "--color--darling-red": "#ec1115", 
+        "--color--white": "white" 
+    }, { 
+        "--color--darling-red": "white", 
+        "--color--white": "black",
+        scrollTrigger: {
+            trigger: ".work-wrapper",
+            start: "top 90%",
+            end: "top 75%",
+            scrub: true,
+            ease: "none",
+        },
+        immediateRender: false,
+    });
+
+  	// COMING SOON INTERACTION
+  	const keepSecretImages = gsap.utils.toArray("#keep-secret-image");
+    const comingSoonCards = gsap.utils.toArray(".work-card.coming-soon");
+
+    gsap.set(keepSecretImages, { opacity: 0, zIndex: 20 });
+
+    function revealSecret(index) {
+        gsap.to(keepSecretImages[index], { opacity: 1, ease: "none" });
+    }
+
+    function fadeOut(index) {
+        gsap.to(keepSecretImages[index], { opacity: 0, duration: 1, ease: "none", delay: 3 });
+    }
+
+    comingSoonCards.forEach((c,i) => {
+        c.addEventListener("click", () => {
+            revealSecret(i);
+            fadeOut(i);
+        })
+    });
+    
+    // SERVICES ENTRANCE
+    gsap.fromTo("html", { 
+        "--color--darling-red": "white", 
+        "--color--white": "black" 
+    }, { 
+        "--color--darling-red": "#ec1115", 
+        "--color--white": "white",
+        scrollTrigger: {
+            trigger: ".brochure-services",
+            start: "top 65%",
+            end: "top 50%",
+            scrub: true,
+            ease: "none",
+        },
+        immediateRender: false,
+    });
+
+    // SERVICES GRID ANIMATION
     const pxValue = remToPx(6); 
 
     ScrollTrigger.create({
@@ -148,6 +173,23 @@ document.addEventListener("DOMContentLoaded", (event) => {
         pin: ".pin-me",
         scrub: true,
         ease: "none",
+    });
+
+    // PHOTOS ENTRANCE
+    gsap.fromTo("html", { 
+        "--color--darling-red": "#ec1115", 
+        "--color--white": "white" 
+    }, { 
+        "--color--darling-red": "white", 
+        "--color--white": "#ec1115",
+        scrollTrigger: {
+            trigger: ".photos",
+            start: "top top",
+            end: "+=10px",
+            scrub: true,
+            ease: "none",
+        },
+        immediateRender: false,
     });
 
     // PHOTOS ANIMATION
@@ -170,110 +212,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
             ease: "none"
         }, i * 0.5);         
     });
-
-    photosTL.to("html", 
-        { "--color--darling-red": "#ed2024", "--color--white": "white" }
-    );
-
-    // ABOUT US ANIMATION
-    // Load Lottie
-    window.usLottie = lottie.loadAnimation({
-        container: document.getElementById("about-us-lottie"),
-        path: "https://cdn.prod.website-files.com/6418ab0e18a18160ffc38a6f/6807b14a50a2c42198f28c37_f8175d830f79db083f4bfce7b8d7a77e_Darling_Website_GetToKnowUs.json",
-        renderer: "svg",
-        autoplay: false,
-    });
-
-    // Add CSS Variables to Lottie
-    if (window.usLottie) {
-        usLottie.addEventListener("DOMLoaded", () => {
-            const svg = document.querySelector("#about-us-lottie svg");
-            const lines = svg.querySelectorAll(".lottie-us-line");
-            const fills = svg.querySelectorAll(".lottie-us-mask, .lottie-us-bg");
-
-            lines.forEach((line) => {
-                const path = line.querySelector("path");
-                if (path) path.style.stroke = "var(--color--darling-red)"; 
-            });
-
-            fills.forEach((fill) => {
-                const path = fill.querySelector("path");
-                if (path) path.style.fill = "var(--color--white)"; 
-            });
-        });
-    };
-
-    let tl = gsap.timeline({
-        scrollTrigger: {
-                id: "usAnimation",
-                trigger: ".about-us",
-                start: "top top",
-                end: "+=3000",
-                scrub: true,
-                pin: ".about-us",
-                ease: "none",
-                onUpdate: function (self) {
-                    const progress = self.progress;
-                    if (window.usLottie) {
-                        window.usLottie.goToAndStop(window.usLottie.totalFrames * progress, true);
-                    } 
-                },
-            },
-    });
-
-    window.addEventListener("load", () => {
-        document.fonts.ready.then(() => {
-            gsap.utils.toArray(".about-text").forEach((text, i) => {
-                let animation;
-
-                if (i === 0) { 
-                    gsap.set(text, { y: 0, opacity: 1 }); 
-                }
-
-                SplitText.create(text, {
-                    type: "lines",
-                    autoSplit: true,
-                    onSplit(self) {
-                        animation && animation.revert();
-                        let startTime = animation ? animation.startTime() : "+=0";
-                        if (i === 0) {
-                            animation = gsap.timeline()
-                            .to(self.lines, { duration: 0.9 })
-                            .fromTo(self.lines, { y: 0, opacity: 1 }, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" }, duration: 0.3 })
-                        } else if (i > 0 && i < 3) {
-                            animation = gsap.timeline()
-                            .fromTo(self.lines, { y: -5, opacity: 0 }, { y: 0, opacity: 1, stagger: { each: 0.1 }, duration: 0.3 })
-                            .to(self.lines, { duration: 0.6 })
-                            .to(self.lines, { y: 5, opacity: 0, stagger: { each: 0.1, from: "end" }, duration: 0.3 });
-                        } else {
-                            animation = gsap.timeline()
-                            .fromTo(self.lines, { y: -5, opacity: 0 }, { y: 0, opacity: 1, stagger: { each: 0.1 }, duration: 0.3 })
-                            .to(self.lines, { duration: 0.9 });
-                        }
-                        tl.add(animation, startTime);
-                    }
-                });
-            });
-        });
-    });
-
-    
-
-    // FOOTER ENTRANCE
-    let footerEntrance = gsap.timeline({
-        scrollTrigger: {
-            trigger: ".footer",
-            start: "top 50%",
-            end: "bottom bottom",
-            scrub: true,
-            ease: "none",
-        }
-    });
-
-    footerEntrance
-    .fromTo("html", 
-    { "--color--darling-red": "#ed2024", "--color--white": "white" }, 
-    { "--color--darling-red": "white", "--color--white": "#ed2024" });
 
     // FOOTER ANIMATION
     // Load Lottie
@@ -301,15 +239,12 @@ document.addEventListener("DOMContentLoaded", (event) => {
             },
     });
 
-    window.addEventListener("load", () => {
+    function refreshScroll() {
         setTimeout(() => {
             ScrollTrigger.refresh();
         }, 200);
-    });
+    }
 
-    window.addEventListener("resize", () => {
-        setTimeout(() => {
-            ScrollTrigger.refresh();
-        }, 200);
-    });
+    window.addEventListener("load", refreshScroll);
+    window.addEventListener("resize", refreshScroll);
 });
