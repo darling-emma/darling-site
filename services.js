@@ -1,4 +1,4 @@
-console.log("connected - services - v1");
+console.log("connected - services - June 2026");
 
 window.addEventListener("load", () => {
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
@@ -23,66 +23,40 @@ window.addEventListener("load", () => {
 
     // DESKTOP IMAGE SCROLL
     mm.add("(min-width: 992px)", () => {
-        const bottomButtons = gsap.utils.toArray(".pill-button");
-        const containers = gsap.utils.toArray(".services-list-text");
-        const lists = gsap.utils.toArray(".text-list");
-        const paragraphs = gsap.utils.toArray(".text-paragraph");
-        const images = gsap.utils.toArray(".image-scroll");
+        const items = gsap.utils.toArray(".services-list-item");
+        let lastIndexEntered = 0;
 
-        gsap.set(images, { opacity: 0 });
-        gsap.set(images[0], { opacity: 1 });
-        gsap.set([...lists, ...paragraphs], { display: "none", height: 0 });
-        gsap.set(bottomButtons, { opacity: 0, display: "none" });
+        const tls = [];
 
-        let main = gsap.timeline({
-            scrollTrigger: {
-                trigger: ".services-list-content",
-                start: "top top",
-                end: "+=3500",
-                scrub: true,
-                pin: true,
-                invalidateOnRefresh: true,
-            }
-        });
+        items.forEach((item, index) => {
+          const photo = item.querySelector(".services-item-image");
+          const photoHeight = getComputedStyle(photo).width;
+          const text = item.querySelector(".services-item-text");
 
-        for (let i = 0; i < lists.length; i++) {
-            const currentItems = [lists[i], paragraphs[i]];
-            const nextItems = lists[i + 1] ? [lists[i + 1], paragraphs[i + 1]] : null;
+          const tl = gsap.timeline({ paused: index !== 0 ? true : false });
+          tl.set(text, { display: "none" })
+            .fromTo(
+              photo,
+              { height: "0px" },
+              { ease: "power2.inOut", duration: 0.2, height: photoHeight }
+            )
+            .set(text, { display: "flex" }, "<")
+            .fromTo(
+              text,
+              { opacity: 0, height: "0px" },
+              { opacity: 1, height: "auto", ease: "power2.inOut", duration: 0.2 },
+              "<"
+            );
 
-            main.set(currentItems, { display: "flex" });
-            main.set(bottomButtons[i], { display: "block" }, "<");
+          tls.push(tl);
 
-            main.to(currentItems, { height: "auto", ease: "power1.out", duration: 1 });
-            main.to([bottomButtons[i], images[i]], { opacity: 1, ease: "none", duration: 0.5 }, "<");
-            main.from(containers[i], { gap: 0, ease: "power1.out", duration: 1 }, "<");
+          item.addEventListener("mouseenter", () => {
+            tls[lastIndexEntered].timeScale(1).reverse();
 
-            main.to(currentItems, { duration: 1.5 })
+            lastIndexEntered = index;
 
-            main.to(currentItems, { height: 0, ease: "power1.in", duration: 1 });
-            if (i < images.length - 1) main.to(images[i], { opacity: 0, ease: "none", duration: 0.5 }, "<");
-            main.to(bottomButtons[i], { opacity: 0, ease: "none", duration: 0.5 }, "<");
-
-            if (i < images.length - 1) main.to(images[i + 1], { opacity: 1, ease: "none", duration: 0.5 }, "<");
-
-            main.to(containers[i], { gap: 0, ease: "power1.in", duration: 1 }, "<");
-            main.set(currentItems, { display: "none" });
-            main.set(bottomButtons[i], { display: "none" }, "<");
-
-            if (nextItems) {
-                main.set(nextItems, { display: "flex" }, "<");
-                main.set(bottomButtons[i + 1], { display: "block" }, "<");
-            }
-        }
-
-        gsap.to(".services-page-list", {
-            opacity: 0,
-            scrollTrigger: {
-                trigger: ".text-xl",
-                start: "top bottom",
-                end: "top center",
-                scrub: true,
-                invalidateOnRefresh: true,
-            },
+            tls[index].timeScale(1).play();
+          });
         });
     });
 
@@ -127,43 +101,41 @@ window.addEventListener("load", () => {
         photoEls.forEach((el, i) => {
             photosTL.to(el, { scale: 1.005, duration: 1, ease: "none" }, i * 0.5);
         });
-    });
 
-    // XL TEXT
-    let endValue, travelWidth;
-
-    function calculateXLText() {
-        const textWidth = document.querySelector(".text-xl-wrapper").getBoundingClientRect().width;
-
-        const textContainer = document.querySelector(".text-xl");
-        const buffer = parseFloat(getComputedStyle(textContainer).paddingLeft);
-
-        const textTotal = textWidth + (buffer * 2);
-
-        travelWidth = window.innerWidth - textTotal;
-
-        endValue = travelWidth * -1.5;
-    }
-
-    document.fonts.ready.then(() => {
-        calculateXLText();
-
-        ScrollTrigger.addEventListener("refreshInit", () => calculateXLText());
-
-        gsap.to(".text-xl-wrapper", {
-            x: () => travelWidth,
+        // Color Change
+        gsap.fromTo("html", { 
+            "--color--darling-red": "#ec1115", 
+            "--color--white": "white",
+        }, {
+            "--color--darling-red": "white", 
+            "--color--white": "#ec1115",
             scrollTrigger: {
-                trigger: ".text-xl",
+                trigger: ".photos",
                 start: "top top",
-                end: () => `+=${endValue}`,
-                scrub: true,
-                pin: true,
-                invalidateOnRefresh: true,
-                ease: "none",
-            }
+                end: "+=1500",
+                toggleActions: "play none none reverse",
+            },
+            duration: 0.01,
+            immediateRender: false,
+        });
+
+        gsap.fromTo("html", { 
+            "--color--darling-red": "white", 
+            "--color--white": "#ec1115",
+        }, {
+            "--color--darling-red": "#ec1115", 
+            "--color--white": "white",
+            scrollTrigger: {
+                trigger: ".photos",
+                start: "top top",
+                end: "+=1500",
+                toggleActions: "none play reverse none",
+            },
+            duration: 0.01,
+            immediateRender: false,
         });
     });
-
+    
     // CLIENT LIST SECTION
     $('.client-list-item').each(function() {
         const idText = $(this).children('.idtext').text().trim();
@@ -241,20 +213,46 @@ window.addEventListener("load", () => {
 
     // CTA TRANSITION
     gsap.fromTo("html", {
-        "--color--darling-red": "#ec1117", 
+        "--color--darling-red": "#ec1115", 
         "--color--white": "white"
     }, {
         "--color--darling-red": "white", 
-        "--color--white": "#ec1117",
+        "--color--white": "#ec1115",
         scrollTrigger: {
             trigger: ".services-cta",
-            start: "top 50%",
-            end: "top top",
+            start: "top 30%",
+            end: "top 10%",
             scrub: true,
             invalidateOnRefresh: true,
-        }
+        },
+        immediateRender: false,
     });
 
+    // CTA ANIMATION
+    mm.add("(min-width: 992px)", () => {
+        document.fonts.ready.then(() => {
+            SplitText.create(".cta-text", {
+                type: "chars, words",
+                charsClass: "cta-char",
+                autoSplit: true,
+                onSplit(self) {
+                    return gsap.utils.toArray(".cta-char").forEach(c => {
+                        c.addEventListener("mouseenter", () => {
+                            gsap.to(c, {
+                                yPercent: -25,
+                            });
+                        });
+                        c.addEventListener("mouseleave", () => {
+                            gsap.to(c, {
+                                yPercent: 0,
+                            });
+                        });
+                    });
+                }
+            });
+        });
+    });
+    
     // FOOTER ANIMATION
     // Load Lottie
     window.footerLottie = lottie.loadAnimation({
