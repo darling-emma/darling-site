@@ -1,4 +1,4 @@
-console.log("connected - thoughts - v3.5");
+console.log("connected - thoughts - June 2026");
 
 document.addEventListener("DOMContentLoaded", (event) => {
     gsap.registerPlugin(ScrollTrigger)
@@ -10,6 +10,39 @@ document.addEventListener("DOMContentLoaded", (event) => {
     gsap.timeline()
     .set(".blog-collection-item", { visibility: "visible", y: -5 })
     .to(".blog-collection-item", { opacity: 1, y: 0, ease: "power2.out", duration: 0.3, stagger: 0.15 });
+
+    // ACCORDION OPEN
+    let blogHeading = [], blogText = [];
+
+    gsap.utils.toArray(".post-body").forEach((t, i) => {
+        blogText[i] = t;
+        gsap.set(blogText[i], { height: 0 });
+        blogText[i].dataset.open = "false";
+    });
+
+    function blogPostOpen(i) {
+        gsap.to(blogText[i], { height: "auto", duration: 0.8, ease: "power2.out" });
+        blogText[i].dataset.open = "true";
+    }
+
+    function blogPostClose(i) {
+        gsap.to(blogText[i], { height: 0, duration: 0.8, ease: "power2.in" });
+        blogText[i].dataset.open = "false";
+    }
+
+    function handleClick(i) {
+        const isOpen = blogText[i].dataset.open === "true";
+        if (isOpen) {
+            blogPostClose(i);
+        } else {
+            blogPostOpen(i);
+        }
+    }
+
+    gsap.utils.toArray(".blog-heading").forEach((h, i) => {
+        blogHeading[i] = h;
+        blogHeading[i].addEventListener("click", () => handleClick(i));
+    });
 
     // Blog Post Sharing Script
     const blogPostWrappers = document.querySelectorAll('.blog-post-wrapper');
