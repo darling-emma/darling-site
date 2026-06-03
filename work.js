@@ -1,4 +1,4 @@
-console.log("connected - work - v4");
+console.log("connected - work - June 2026");
 
 document.addEventListener("DOMContentLoaded", (event) => {
     gsap.registerPlugin(ScrollTrigger)
@@ -11,23 +11,25 @@ document.addEventListener("DOMContentLoaded", (event) => {
     .set(".work-page-collection-wrapper", { visibility: "visible", y: 5 })
     .to(".work-page-collection-wrapper", { opacity: 1, y: 0, ease: "power2.out", duration: 0.3 });
 
-    // WORK CARD ANIMATION
-    let workCard = gsap.utils.toArray(".work-card");
+  	// COMING SOON INTERACTION
+  	const keepSecretImages = gsap.utils.toArray("#keep-secret-image");
+    const comingSoonCards = gsap.utils.toArray(".work-card.coming-soon");
 
-    workCard.forEach((item) => {
-        gsap.set(item, { opacity: 0, y: 10 });
-        
-        gsap.to(item, {
-            opacity: 1,
-            y: 0,
-            scrollTrigger: {
-                trigger: item,
-                start: "top 90%",
-                end: "top 50%",
-                toggleActions: "play none none reverse",
-                invalidateOnRefresh: true,
-            }
-        });
+    gsap.set(keepSecretImages, { opacity: 0, zIndex: 20 });
+
+    function revealSecret(index) {
+        gsap.to(keepSecretImages[index], { opacity: 1, ease: "none" });
+    }
+
+    function fadeOut(index) {
+        gsap.to(keepSecretImages[index], { opacity: 0, duration: 1, ease: "none", delay: 3 });
+    }
+
+    comingSoonCards.forEach((c,i) => {
+        c.addEventListener("click", () => {
+            revealSecret(i);
+            fadeOut(i);
+        })
     });
 
     // FOOTER ENTRANCE
